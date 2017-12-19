@@ -1,0 +1,193 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Videogames"
+    },
+    "host": "localhost:9090",
+    "schemes": [
+        "http"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "paths": {
+        "/consoles": {
+            "get": {
+                "description": "Gets `console` objects.\nOptional query param of **size** determines\nsize of returned array\n",
+                "parameters": [
+                    {
+                        "name": "company",
+                        "in": "query",
+                        "description": "Company",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Year",
+                        "required": false,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "title": "ArrayOfConsoles",
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/console"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new console",
+                "parameters": [
+                    {
+                        "name": "Console",
+                        "in": "body",
+                        "description": "New Console",
+                        "required": false,
+                        "schema": {
+                            "$ref": "#/definitions/newconsole"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful creation",
+                        "schema": {
+                            "$ref": "#/definitions/console"
+                        }
+                    }
+                }
+            }
+        },
+        "/consoles/{id}": {
+            "get": {
+                "description": "Get a Console by ID",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/console"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a Console by ID",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "404": {
+                        "description": "Invalid id"
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a Console by ID",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/id"
+                    },
+                    {
+                        "name": "Console",
+                        "in": "body",
+                        "description": "New Console",
+                        "required": false,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "company": {
+                                    "type": "string"
+                                },
+                                "year": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/console"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "console": {
+            "type": "object",
+            "required": [
+                "id",
+                "name"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "newconsole": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "parameters": {
+        "id": {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the Console",
+            "type": "string"
+        }
+    }
+}

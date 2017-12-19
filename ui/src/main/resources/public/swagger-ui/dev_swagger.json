@@ -1,0 +1,492 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Platform Access Manager\n\n## Assumptions\n  - ** Authz API Authroization - **Authz APIs require at temporary access token. There is no other access to the APIs.\n  - **Unmapped Legacy Errors - ** Unmapped errors from legancy will be returned in the common error object:\n      - code: a defined error code for general error\n      - title: \"Unmapped legacy error code\"\n      - meta: a concatenated string = \"legacy\" + error code + legacy text\n  - ** Legacy Error Granularity vs. Microservice -** Becuase Phase 1 is a \"surround\" model, we may not be able to express the level of detail that future, native implementations will return.\n  - **Header Validation - **Not supported in Phase 1\n  - ** Marketing Option Set Date - ** Not supported in Phase 1 as it is not supported  in Legacy Mambership\n##   \n",
+        "version": "0.3.2.6",
+        "title": "Gatekeeper",
+        "termsOfService": "http://www.dowjones.com/tos.html",
+        "contact": {
+            "name": "Teamperseus@dowjones.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.dowjones.com/licenses/LICENSE.html"
+        }
+    },
+    "host": "dev.gatekeeper.membership.build.pib.dowjones.io",
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "paths": {
+        "/swagger": {
+            "get": {
+                "summary": "Get swagger json",
+                "description": "Use for swagger viewer endpoint",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad Request - Incorrect Parameters",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found - No resource found for the request",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Server encountered an unexpected condition",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable - Server is currently unable to handle the request",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    }
+                }
+            }
+        },
+        "/access_token": {
+            "post": {
+                "summary": "Request access the platform for a user",
+                "description": "Note that the user is passed in the JWT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "body",
+                        "description": "Platform access request",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/platform_access_request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success - AccessToken returned",
+                        "schema": {
+                            "$ref": "#/definitions/platform_access_response_success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request. Invalid transaction or parameters",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "401": {
+                        "description": "User is not authorized - invalid JWT (bad hash, expired token, etc.)",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found - No resource found for the request",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict with the current authz state - incomplete authz configuration",
+                        "schema": {
+                            "$ref": "#/definitions/access_error_response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Server encountered an unexpected condition",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    }
+                }
+            }
+        },
+        "/authz": {
+            "patch": {
+                "tags": [
+                    "authz"
+                ],
+                "summary": "Update authz properties for a user. Note that this is s restricted user attribute update operation requiring a temp token provided by the platform. Administrative apis will be defined later using routes such as /user/authz and will require an access token and authorizations to retrieve and CRUD the autz attributes",
+                "description": "Set a user's AuthZ policy properties",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "Request",
+                        "description": "AuthZ policy properties to set",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/authz_config_set_request"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Bad Request - Incorrect Parameters",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Access",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found - No resource found for the request",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Server encountered an unexpected condition",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable - Server is currently unable to handle the request.",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    }
+                }
+            }
+        },
+        "/authz/{id}": {
+            "get": {
+                "tags": [
+                    "authz"
+                ],
+                "summary": "Get authz properties for a user. Note that this is s restricted user attribute update operation requiring a temp token provided by the platform. Administrative apis will be defined later using routes such as /user/{id}/authz and will require an access token and authorizations to retrieve and CRUD the autz attributes",
+                "description": "Get a user's AuthZ policy properties.",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "description": "A temporary access token used to identify the user (user id is encrypted in the token). Technically not a good resrouce id for and authz resource as it is ephemeral, but it works in the context of the authz workflow. And, the user id in the encryption is a constant.",
+                        "required": true,
+                        "type": "string",
+                        "format": "temp_access_token"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/authz_config_get_response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request - Incorrect Parameters",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized Access",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found - No resource found for the request",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - Server encountered an unexpected condition",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable - Server is currently unable to handle the request.",
+                        "schema": {
+                            "$ref": "#/definitions/common_error_response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "common_error_object": {
+            "type": "object",
+            "required": [
+                "code",
+                "title",
+                "status"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "meta": {
+                    "type": "string"
+                }
+            }
+        },
+        "common_error_response": {
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/common_error_object"
+                    }
+                }
+            }
+        },
+        "platform_access_request": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "required": [
+                        "type",
+                        "attributes"
+                    ],
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "default": "access_token",
+                            "description": "Platform access token."
+                        },
+                        "attributes": {
+                            "type": "object",
+                            "required": [
+                                "authn_jwt"
+                            ],
+                            "properties": {
+                                "authn_jwt": {
+                                    "type": "string",
+                                    "format": "authn_jwt"
+                                },
+                                "device_type": {
+                                    "type": "string",
+                                    "description": "udevice_type - optional"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "platform_access_response_success": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "format": "access_token",
+                            "description": "Platform access token to be used for platform API calls"
+                        },
+                        "type": {
+                            "type": "string",
+                            "format": "access_token",
+                            "default": "access_token",
+                            "description": "Platform access token"
+                        }
+                    }
+                }
+            }
+        },
+        "access_error_response": {
+            "type": "object",
+            "properties": {
+                "meta": {
+                    "type": "object",
+                    "properties": {
+                        "temp_access_token": {
+                            "description": "Temporary token to authorize use of APIs to read / update user's authz configuration",
+                            "type": "string"
+                        }
+                    }
+                },
+                "errors": {
+                    "$ref": "#/definitions/common_error_response"
+                }
+            }
+        },
+        "authz_properties_set": {
+            "properties": {
+                "privacy_policy": {
+                    "properties": {
+                        "is_accepted": {
+                            "type": "boolean"
+                        },
+                        "policy_version": {
+                            "description": "Version of policy accepted",
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                },
+                "marketing_options": {
+                    "properties": {
+                        "options": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/authz_properties_marketing_option_set"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "authz_properties_get": {
+            "type": "object",
+            "properties": {
+                "privacy_policy": {
+                    "$ref": "#/definitions/authz_properties_privacy_policy_get"
+                },
+                "marketing_options": {
+                    "type": "object",
+                    "properties": {
+                        "allow_preselection": {
+                            "type": "boolean"
+                        },
+                        "options": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/authz_properties_marketing_option_get"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "authz_properties_privacy_policy_get": {
+            "type": "object",
+            "properties": {
+                "is_accepted": {
+                    "description": "Is the privacy policy accepted?",
+                    "type": "boolean"
+                },
+                "date_accepted": {
+                    "description": "Date of policy acceptance",
+                    "type": "string",
+                    "format": "date"
+                },
+                "policy_version": {
+                    "description": "Version of policy accepted",
+                    "type": "string",
+                    "format": "date"
+                }
+            }
+        },
+        "authz_properties_marketing_option_set": {
+            "properties": {
+                "name": {
+                    "description": "Marketing option name. Note that the valid list of names will come from API calls to the platform or configuration files.",
+                    "type": "string"
+                },
+                "is_accepted": {
+                    "description": "Did the user accept marketing for this option?",
+                    "type": "boolean"
+                }
+            }
+        },
+        "authz_properties_marketing_option_get": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Marketing option name. Note that the valid list of names will come from API calls to the platform or configuration files.",
+                    "type": "string"
+                },
+                "date_set": {
+                    "description": "Last date that the option was set by the user",
+                    "type": "string",
+                    "format": "date"
+                },
+                "is_accepted": {
+                    "description": "Did the user accept marketing for this option?",
+                    "type": "boolean"
+                }
+            }
+        },
+        "authz_config_get_response": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "format": "temp_access_token"
+                        },
+                        "type": {
+                            "type": "string",
+                            "default": "authz"
+                        },
+                        "attributes": {
+                            "$ref": "#/definitions/authz_properties_get"
+                        }
+                    }
+                }
+            }
+        },
+        "authz_config_set_request": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "format": "temp_access_token"
+                        },
+                        "type": {
+                            "type": "string",
+                            "default": "authz"
+                        },
+                        "attributes": {
+                            "$ref": "#/definitions/authz_properties_set"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
