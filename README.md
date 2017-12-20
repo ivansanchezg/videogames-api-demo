@@ -6,8 +6,8 @@ The project is deployed and run locally. The data in this API is only handled in
 
 ## Build and run the server locally
 
-Follow the instructions from this [file](./server/README.md)
+Follow the instructions from this [file](./server/README.md).
 
 ## Build and run the ui locally
 
-Follow the instructions from this [file](./ui/README.md)
+Follow the instructions from this [file](./ui/README.md).

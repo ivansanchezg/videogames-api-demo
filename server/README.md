@@ -27,4 +27,4 @@ The following routes are defined on the API.
 - POST /consoles
 - PUT /consoles/{id}
 
-For a better experience build and run the [UI](../ui)
+For a better experience build and run the [UI](../ui).

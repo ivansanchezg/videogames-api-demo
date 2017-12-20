@@ -18,4 +18,4 @@ Once the build is complete execute `$ java -jar target/videogamesui-1.0-jar-with
 
 To test that the webpage is hosted correctly open a browser and go to [localhost:4567](http://localhost:4567). 
 
-To be able to use the "Try it out" feature of Swagger UI build and run the [server](../server/)
+To be able to use the "Try it out" feature of Swagger UI build and run the [server](../server/).
