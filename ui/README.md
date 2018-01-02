@@ -10,7 +10,7 @@ brew install maven
 ## Build and run the UI locally
 Clone the repository or download the ZIP. 
 
-Open a terminal and change directory to the ui directory. 
+Open a terminal and change directory to the `ui` directory. 
 
 Execute `$ mvn clean package`. 
 
