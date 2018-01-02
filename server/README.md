@@ -11,7 +11,7 @@ brew install maven
 
 Clone the repository or download the ZIP. 
 
-Open a terminal and change directory to the repository and execute `$ mvn clean package`. 
+Open a terminal and change directory to the `server` repository and execute `$ mvn clean package`. 
 
 Once the build is complete execute `$ java -jar target/videogamesapi-1.0-jar-with-dependencies.jar`. This command will start the server on your localhost on port 9090. 
 
