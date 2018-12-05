@@ -1,5 +1,5 @@
 $(function () {
-    var url = "http://raw.githubusercontent.com/ivansanchezg/videogames-swagger-ui/master/swagger.json";
+    var url = "https://raw.githubusercontent.com/ivansanchezg/videogames-api-demo/master/ui/swagger.json";
 
     // Pre load translate...
     if(window.SwaggerTranslator) {
